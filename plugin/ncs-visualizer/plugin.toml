@@ -13,11 +13,11 @@
 id = "tausif/ncs-visualizer"
 name = "NCS Visualizer"
 version = "1.0.0"
-plugin_api = 24
+plugin_api = 26
 author = "tausif"
 license = "GPL-3.0-or-later"
 dependencies = ["aurora-ncs", "cava"]
-tags = ["audio", "desktop", "visualizer"]
+tags = ["audio", "desktop", "music"]
 icon = "wave-sine"
 description = "The NCS audio-visualizer orb on your desktop: 103k GPU-drawn dots that react to any audio, in your theme colours."
 

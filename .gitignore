@@ -1,1 +1,6 @@
 renderer/build/
+
+# Nix
+result
+result-*
+.direnv

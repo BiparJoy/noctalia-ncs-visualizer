@@ -44,6 +44,43 @@ C++17 compiler. At runtime you need **cava**, a wlr-layer-shell compositor
 (niri, Hyprland, Sway, river, …) and OpenGL 3.3. `install.sh` lists the package
 names for the common distros.
 
+## Install with Nix
+
+The flake builds the `aurora-ncs` renderer with `cava` already on its PATH. The
+plugin itself is still installed from Noctalia's plugin browser.
+
+```sh
+nix run github:BiparJoy/noctalia-ncs-visualizer -- --help
+nix profile install github:BiparJoy/noctalia-ncs-visualizer
+```
+
+On NixOS, add it as a flake input (swap `BiparJoy` for your own user if you
+use a fork):
+
+```nix
+{
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.noctalia-ncs-visualizer = {
+    url = "github:BiparJoy/noctalia-ncs-visualizer";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  outputs = { nixpkgs, noctalia-ncs-visualizer, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            noctalia-ncs-visualizer.packages.${pkgs.stdenv.hostPlatform.system}.default
+            # The plugin checks for cava on Noctalia's own PATH too.
+            pkgs.cava
+          ];
+        })
+      ];
+    };
+  };
+}
+```
+
 ## Settings
 
 ![Settings](screenshots/settings.png)

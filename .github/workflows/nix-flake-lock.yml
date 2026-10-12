@@ -1,0 +1,26 @@
+name: Update flake.lock
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+
+      - uses: DeterminateSystems/update-flake-lock@v24
+        with:
+          # A PAT (repo secret FLAKE_LOCK_PAT) makes the PR re-trigger nix.yml;
+          # PRs opened with GITHUB_TOKEN do not start other workflows.
+          token: ${{ secrets.FLAKE_LOCK_PAT || secrets.GITHUB_TOKEN }}
+          pr-title: "chore(nix): update flake.lock"
+          commit-msg: "chore(nix): update flake.lock"

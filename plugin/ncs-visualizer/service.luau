@@ -28,6 +28,7 @@ local HEARTBEAT_TIMEOUT = 20 -- renderer gives up after this long without one
 local CHECK_EVERY = 3 -- seconds between process checks
 local CRASH_WINDOW_MS = 60000
 local CRASH_LIMIT = 4 -- launches within CRASH_WINDOW_MS before giving up
+local CRASH_COOLDOWN_MS = 300000 -- after giving up, try again this long after the last launch
 
 local enabled = true
 local lastWritten = nil
@@ -302,12 +303,18 @@ local function ensureRunning(binary: string)
     noctalia.processMatches(function(matched)
         checking = false
         running = matched
+        -- A renderer that is up (e.g. started by hand from a terminal) ends the crash state,
+        -- and so does the cooldown, so a fixed renderer recovers without a toggle.
+        if crashed and (matched or noctalia.nowMs() - launches[#launches] >= CRASH_COOLDOWN_MS) then
+            crashed = false
+            launches = {}
+        end
         if matched or not enabled or crashed or lastWritten == nil then
             return
         end
         if recentLaunches() >= CRASH_LIMIT then
             crashed = true
-            log(`renderer exited {CRASH_LIMIT} times in a minute; not restarting until settings change`)
+            log(`renderer exited {CRASH_LIMIT} times in a minute; retrying in {CRASH_COOLDOWN_MS // 60000} minutes or when settings change`)
             return
         end
         table.insert(launches, noctalia.nowMs())

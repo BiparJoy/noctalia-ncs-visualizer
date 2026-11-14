@@ -27,6 +27,10 @@ int main(int argc, char *argv[])
     // The renderer is a QQuickFramebufferObject: it needs Qt Quick on OpenGL.
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
     QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
+    // Without this, EGL on Wayland (seen on NVIDIA) may hand out an OpenGL ES context.
+    fmt.setRenderableType(QSurfaceFormat::OpenGL);
+    fmt.setVersion(3, 3);
+    fmt.setProfile(QSurfaceFormat::CoreProfile);
     fmt.setAlphaBufferSize(8);
     QSurfaceFormat::setDefaultFormat(fmt);
 

@@ -12,7 +12,7 @@
 
 id = "tausif/ncs-visualizer"
 name = "NCS Visualizer"
-version = "1.0.0"
+version = "1.0.1"
 plugin_api = 26
 author = "tausif"
 license = "GPL-3.0-or-later"

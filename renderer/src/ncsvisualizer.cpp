@@ -124,12 +124,17 @@ bool NcsRenderer::initialize()
     initializeOpenGLFunctions();
 
     QOpenGLContext *ctx = QOpenGLContext::currentContext();
-    if (!ctx || ctx->isOpenGLES()) {
-        m_pendingError = QStringLiteral("The NCS renderer needs desktop OpenGL 3.3 or newer.");
+    if (!ctx) {
+        m_pendingError = QStringLiteral("The NCS renderer needs desktop OpenGL 3.3 or newer (no OpenGL context was created).");
         m_failed = true;
         return false;
     }
     const QSurfaceFormat fmt = ctx->format();
+    if (ctx->isOpenGLES()) {
+        m_pendingError = QStringLiteral("The NCS renderer needs desktop OpenGL 3.3 or newer (got OpenGL ES %1.%2).").arg(fmt.majorVersion()).arg(fmt.minorVersion());
+        m_failed = true;
+        return false;
+    }
     if (fmt.majorVersion() * 10 + fmt.minorVersion() < 33) {
         m_pendingError = QStringLiteral("The NCS renderer needs OpenGL 3.3 or newer (got %1.%2).").arg(fmt.majorVersion()).arg(fmt.minorVersion());
         m_failed = true;
